@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import {
   View,
@@ -7,49 +7,104 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
+import PropTypes from 'prop-types';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Creators as FavoritesActions } from 'store/ducks/favorites';
 
 import styles from './styles';
 
-const Main = () => (
-  <SafeAreaView style={styles.container}>
-    <StatusBar barStyle="light-content" />
+class Main extends Component {
+  static navigationOptions = {
+    header: null,
+  };
 
-    <View style={styles.content}>
-      <Text style={styles.title}>GitMark</Text>
-      <Text style={styles.description}>
-        Comece adicionando alguns repositórios aos seus favoritos
-      </Text>
+  static propTypes = {
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func,
+    }).isRequired,
+    addFavoriteRequest: PropTypes.func.isRequired,
+    favorites: PropTypes.shape({
+      data: PropTypes.arrayOf(PropTypes.shape),
+      errorOnAdd: PropTypes.oneOfType([null, PropTypes.string]),
+      loading: PropTypes.bool,
+    }).isRequired,
+  };
 
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="usuario/repositório"
-          underlineColorAndroid="transparent"
-        />
+  state = {
+    repoNameInput: '',
+  };
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {}}
-          activeOpacity={0.6}
-        >
-          <Text style={styles.buttonText}>Adicionar aos favoritos</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+  navigateToFavorites = () => {
+    this.props.navigation.navigate('Favorites');
+  };
 
-    <View style={styles.footer}>
-      <TouchableOpacity onPress={() => {}}>
-        <Text style={styles.footerLink}>Meus favoritos (3)</Text>
-      </TouchableOpacity>
-    </View>
-  </SafeAreaView>
-);
+  addRepository = () => {
+    if (!this.state.repoNameInput.length) return;
+    this.props.addFavoriteRequest(this.state.repoNameInput);
+  };
 
-Main.navigationOptions = {
-  header: null,
-};
+  render() {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
 
-export default Main;
+        <View style={styles.content}>
+          <Text style={styles.title}>GitMark</Text>
+          <Text style={styles.description}>
+            Comece adicionando alguns repositórios aos seus favoritos
+          </Text>
+
+          <View style={styles.form}>
+            {!!this.props.favorites.errorOnAdd && (
+              <Text style={styles.errorMessage}>
+                {this.props.favorites.errorOnAdd}
+              </Text>
+            )}
+            <TextInput
+              style={styles.input}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="usuario/repositório"
+              underlineColorAndroid="transparent"
+              value={this.state.repoNameInput}
+              onChangeText={repoNameInput => this.setState({ repoNameInput })}
+            />
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={this.addRepository}
+              activeOpacity={0.6}
+            >
+              {this.props.favorites.loading ? (
+                <ActivityIndicator size="small" color={styles.loading.color} />
+              ) : (
+                <Text style={styles.buttonText}>Adicionar aos favoritos</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={this.navigateToFavorites}>
+            <Text style={styles.footerLink}>
+              Meus favoritos ({this.props.favorites.data.length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  favorites: state.favorites,
+});
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(FavoritesActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

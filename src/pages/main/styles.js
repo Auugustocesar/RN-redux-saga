@@ -34,11 +34,22 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
 
+  errorMessage: {
+    fontWeight: 'bold',
+    color: colors.danger,
+    alignSelf: 'center',
+    marginBottom: metrics.baseMargin,
+  },
+
   input: {
     height: 50,
     backgroundColor: colors.white,
     borderRadius: metrics.baseRadius,
     paddingHorizontal: metrics.basePadding,
+  },
+
+  loading: {
+    color: colors.dark,
   },
 
   button: {

@@ -1,9 +1,24 @@
-import { StackNavigator } from 'react-navigation'
+import { StackNavigator } from 'react-navigation';
 
-import Main from 'pages/main'
+import { colors } from 'styles';
 
-const Routes = StackNavigator({
-  Main: { screen: Main }
-})
+import Main from 'pages/main';
+import Favorites from 'pages/favorites';
 
-export default Routes
+const Routes = StackNavigator(
+  {
+    Main: { screen: Main },
+    Favorites: { screen: Favorites },
+  },
+  {
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: colors.primaryDark,
+      },
+      headerTintColor: colors.white,
+      headerBackTitle: null,
+    },
+  }
+);
+
+export default Routes;

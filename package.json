@@ -4,7 +4,22 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "react:menu": "adb shell input keyevent 82",
+    "react:reload": "adb shell input keyevent 46 46",
+    "android:clean": "cd android && ./gradlew clean",
+    "android:debug:generate": "cd android && ./gradlew assembleDebug",
+    "android:debug:install":
+      "cd android && adb install app/build/outputs/apk/app-debug.apk",
+    "android:install":
+      "adb install android/app/build/outputs/apk/app-release.apk",
+    "android:release:generate": "cd android && ./gradlew assembleRelease",
+    "android:release:install":
+      "cd android && adb install app/build/outputs/apk/app-release.apk",
+    "android:release:copyfile":
+      "cd android && adb push app/build/outputs/apk/app-release.apk /sdcard/Download",
+    "android:reverse":
+      "adb reverse tcp:7007 tcp:7007 && adb reverse tcp:8081 tcp:8081 && adb reverse tcp:5009 tcp:5009 && adb reverse tcp:9090 tcp:9090"
   },
   "dependencies": {
     "axios": "^0.18.0",
